@@ -297,7 +297,12 @@ class GitHubRepoProvider(RepoProvider):
         self.repo = strip_suffix(self.repo, ".git")
 
     def get_repo_url(self):
-        return "https://github.com/{user}/{repo}".format(user=self.user, repo=self.repo)
+        if self.access_token and self.client_id:
+            return "https://{uname}:{token}@github.com/{user}/{repo}".format(
+                user=self.user, repo=self.repo,
+                uname=self.client_id, token=self.access_token)
+        else:
+            return "https://github.com/{user}/{repo}".format(user=self.user, repo=self.repo)
 
     @gen.coroutine
     def github_api_request(self, api_url):
